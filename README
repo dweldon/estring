@@ -1,0 +1,32 @@
+estring is a set of erlang string functions
+
+supported functions:
+
+begins(String, SubString)
+    returns true if String begins with SubString
+ends(String, SubString)
+    returns true if String ends with SubString
+contains(String, SubString)
+    returns true if String contains SubString
+levenshtein(String1, String2)
+    returns the damerau-levenshtein edit distance between String1 and String2
+similarity(String, TargetString)
+    returns a case-insensitive score representing how similar String is to
+    TargetString based on the edit distance and the length of TargetString
+
+examples:
+
+1> estring:begins("fancy pants", "fancy").
+true
+2> estring:ends("fancy pants", "pants").  
+true
+3> estring:contains("los angeles", "angel").  
+true
+4> estring:levenshtein("cars", "bats").
+2
+5> estring:levenshtein("receive", "recieve").
+1
+6> estring:similarity("epsn sporrts", "espn sports").
+0.8181818181818182
+7> estring:similarity("edit distance", "Edit Distance").            
+1.0
