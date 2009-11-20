@@ -19,7 +19,8 @@
          edit_distance/2,
          similarity/2,
          is_integer/1,
-         format/2]).
+         format/2,
+         strip/1]).
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -136,3 +137,36 @@ format_test_() ->
 
 format(Format, Data) ->
     lists:flatten(io_lib:format(Format, Data)).
+
+%-------------------------------------------------------------------------------
+strip_test_() ->
+    [?_assertEqual("hello world", strip("  hello world ")),
+     ?_assertEqual("hello world", strip(" \t hello world\f\r")),
+     ?_assertEqual("hello world", strip("hello world")),
+     ?_assertEqual("hello  \tworld", strip(" hello  \tworld ")),
+     ?_assertEqual("hello world", strip("hello world\n\n \t")),
+     ?_assertEqual("", strip(" ")),
+     ?_assertEqual("", strip(""))].
+
+strip(String) ->
+    strip(String, [], []).
+
+strip([], _, Result) ->
+    lists:reverse(Result);
+strip([H|T], [], []) ->
+    case whitespace(H) of
+        true -> strip(T, [], []);
+        false -> strip(T, [], [H])
+    end;
+strip([H|T], WhiteSpace, Result) ->
+    case whitespace(H) of
+        true -> strip(T, [H|WhiteSpace], Result);
+        false -> strip(T, [], [H|WhiteSpace] ++ Result)
+    end.
+
+whitespace($\t) -> true;
+whitespace($\n) -> true;
+whitespace($\f) -> true;
+whitespace($\r) -> true;
+whitespace($\ ) -> true;
+whitespace(_) -> false.
