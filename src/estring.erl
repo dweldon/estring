@@ -18,7 +18,8 @@
          contains/2,
          edit_distance/2,
          similarity/2,
-         is_integer/1]).
+         is_integer/1,
+         format/2]).
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -126,3 +127,12 @@ is_integer([]) ->
     false;
 is_integer(String) ->
     lists:all(fun(C) -> C >= 48 andalso C =< 57 end, String).
+
+%-------------------------------------------------------------------------------
+format_test_() ->
+    [?_assertEqual("99 bottles of beer on the wall",
+                   format("~w bottles of ~s on the wall", [99, "beer"])),
+     ?_assertEqual("", format("",[]))].
+
+format(Format, Data) ->
+    lists:flatten(io_lib:format(Format, Data)).
