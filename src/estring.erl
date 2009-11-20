@@ -17,7 +17,8 @@
          ends_with/2,
          contains/2,
          edit_distance/2,
-         similarity/2]).
+         similarity/2,
+         is_integer/1]).
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -109,3 +110,19 @@ similarity(String, TargetString) ->
         true -> Score;
         false -> 0.0
     end.
+
+%-------------------------------------------------------------------------------
+is_integer_test_() ->
+    [?_assertEqual(true, ?MODULE:is_integer("0123")),
+     ?_assertEqual(true, ?MODULE:is_integer("456789")),
+     ?_assertEqual(true, ?MODULE:is_integer("9")),
+     ?_assertEqual(false, ?MODULE:is_integer("10.3")),
+     ?_assertEqual(false, ?MODULE:is_integer("01 23")),
+     ?_assertEqual(false, ?MODULE:is_integer("1x2")),
+     ?_assertEqual(false, ?MODULE:is_integer("")),
+     ?_assertEqual(false, ?MODULE:is_integer("abc"))].
+
+is_integer([]) ->
+    false;
+is_integer(String) ->
+    lists:all(fun(C) -> C >= 48 andalso C =< 57 end, String).
