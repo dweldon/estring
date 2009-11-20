@@ -13,28 +13,28 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -module(estring).
--export([begins/2,
-         ends/2,
+-export([begins_with/2,
+         ends_with/2,
          contains/2,
-         levenshtein/2,
+         edit_distance/2,
          similarity/2]).
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
-begins_test_() ->
-    [?_assertEqual(true, begins("foobar", "foo")),
-     ?_assertEqual(false, begins("foobar", "bar"))].
+begins_with_test_() ->
+    [?_assertEqual(true, begins_with("foobar", "foo")),
+     ?_assertEqual(false, begins_with("foobar", "bar"))].
 
-begins(String, SubString) ->
+begins_with(String, SubString) ->
     string:str(String, SubString) =:= 1.
 
 %-------------------------------------------------------------------------------
-ends_test_() ->
-    [?_assertEqual(false, ends("foobar", "foo")),
-     ?_assertEqual(true, ends("foobar", "bar"))].
+ends_with_test_() ->
+    [?_assertEqual(false, ends_with("foobar", "foo")),
+     ?_assertEqual(true, ends_with("foobar", "bar"))].
 
-ends(String, SubString) ->
-    begins(lists:reverse(String), lists:reverse(SubString)).
+ends_with(String, SubString) ->
+    begins_with(lists:reverse(String), lists:reverse(SubString)).
 
 %-------------------------------------------------------------------------------
 contains_test_() ->
@@ -47,27 +47,27 @@ contains(String, SubString) ->
     string:str(String, SubString) > 0.
 
 %-------------------------------------------------------------------------------
-levenshtein_test_() ->
-    [?_assertEqual(0, levenshtein("computer", "computer")),
+edit_distance_test_() ->
+    [?_assertEqual(0, edit_distance("computer", "computer")),
      %deletion
-     ?_assertEqual(1, levenshtein("computer", "compter")),
+     ?_assertEqual(1, edit_distance("computer", "compter")),
      %substitution
-     ?_assertEqual(1, levenshtein("computer", "camputer")),
+     ?_assertEqual(1, edit_distance("computer", "camputer")),
      %insertion
-     ?_assertEqual(1, levenshtein("computer", "computter")),
+     ?_assertEqual(1, edit_distance("computer", "computter")),
      %transposition
-     ?_assertEqual(1, levenshtein("computer", "comupter")),
+     ?_assertEqual(1, edit_distance("computer", "comupter")),
      %deletion + substitution + insertion
-     ?_assertEqual(3, levenshtein("computer", "camputte")),
+     ?_assertEqual(3, edit_distance("computer", "camputte")),
      %transposition + insertion + deletion
-     ?_assertEqual(3, levenshtein("computer", "cmoputte")),
+     ?_assertEqual(3, edit_distance("computer", "cmoputte")),
      %transposition + insertion + deletion, with source and target swapped
-     ?_assertEqual(3, levenshtein("cmoputte", "computer"))].
+     ?_assertEqual(3, edit_distance("cmoputte", "computer"))].
 
-levenshtein(Source, Source) -> 0;
-levenshtein(Source, []) -> length(Source);
-levenshtein([], Source) -> length(Source);
-levenshtein(Source, Target) ->
+edit_distance(Source, Source) -> 0;
+edit_distance(Source, []) -> length(Source);
+edit_distance([], Source) -> length(Source);
+edit_distance(Source, Target) ->
     D1 = lists:seq(0, length(Target)),
     outer_loop([[]|Source], [[]|Target], {D1, D1}, 1).
 
@@ -104,7 +104,7 @@ similarity([], []) ->
 similarity(String, TargetString) ->
     S = string:to_lower(String),
     TS = string:to_lower(TargetString),    
-    Score = (length(TS) - levenshtein(S, TS)) / length(TS),
+    Score = (length(TS) - edit_distance(S, TS)) / length(TS),
     case Score > 0 of
         true -> Score;
         false -> 0.0

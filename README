@@ -2,13 +2,13 @@ estring is a set of erlang string functions
 
 supported functions:
 
-begins(String, SubString)
+begins_with(String, SubString)
     returns true if String begins with SubString
-ends(String, SubString)
+ends_with(String, SubString)
     returns true if String ends with SubString
 contains(String, SubString)
     returns true if String contains SubString
-levenshtein(String1, String2)
+edit_distance(String1, String2)
     returns the damerau-levenshtein edit distance between String1 and String2
 similarity(String, TargetString)
     returns a case-insensitive score representing how similar String is to
@@ -16,15 +16,15 @@ similarity(String, TargetString)
 
 examples:
 
-1> estring:begins("fancy pants", "fancy").
+1> estring:begins_with("fancy pants", "fancy").
 true
-2> estring:ends("fancy pants", "pants").  
+2> estring:ends_with("fancy pants", "pants").
 true
 3> estring:contains("los angeles", "angel").  
 true
-4> estring:levenshtein("cars", "bats").
+4> estring:edit_distance("cars", "bats").
 2
-5> estring:levenshtein("receive", "recieve").
+5> estring:edit_distance("receive", "recieve").
 1
 6> estring:similarity("epsn sporrts", "espn sports").
 0.8181818181818182
