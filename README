@@ -16,6 +16,11 @@ supported functions:
     strip(String)
         returns a string, where leading and trailing whitespace (" ",\n\t\f\r)
         has been removed
+    squeeze(String)
+    squeeze(String, Char)
+        returns a string where runs of the same character are replaced by Char.
+        Char can be a string or an integer, e.g. "e" or $e. squeeze/1 will call
+        squeeze/2 with " " for Char.
     is_integer(String)
         returns true if String is is a string representation of an integer,
         e.g. "35"
@@ -47,3 +52,7 @@ examples:
         "99 bottles of beer on the wall"
     estring:strip(" clean me \n").
         "clean me"
+    estring:squeeze("the cow says moooo", "o")
+        "the cow says mo"
+    estring:squeeze("i need   a  squeeze!")
+        "i need a squeeze!"

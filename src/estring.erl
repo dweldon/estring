@@ -20,7 +20,9 @@
          similarity/2,
          is_integer/1,
          format/2,
-         strip/1]).
+         strip/1,
+         squeeze/1,
+         squeeze/2]).
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -137,6 +139,30 @@ format_test_() ->
 
 format(Format, Data) ->
     lists:flatten(io_lib:format(Format, Data)).
+
+%-------------------------------------------------------------------------------
+squeeze_test_() ->
+    [?_assertEqual("i need a squeeze!", squeeze("i need   a  squeeze!")),
+     ?_assertEqual("i need a squeeze!", squeeze("i need   a  squeeze!", " ")),
+     ?_assertEqual("yelow moon", squeeze("yellow moon", "l")),
+     ?_assertEqual("babon mon", squeeze("baboon moon", "o")),
+     ?_assertEqual("babon mon", squeeze("baboon moon", $o)),
+     ?_assertEqual("the cow says mo", squeeze("the cow says moooo", $o))].
+
+squeeze(String) ->
+    squeeze(String, " ").
+
+squeeze(String, Char) when erlang:is_integer(Char) ->
+    squeeze(String, Char, [], []);
+squeeze(String, Char) when is_list(Char) ->
+    squeeze(String, hd(Char), [], []).
+
+squeeze([], _, _, Result) ->
+    lists:reverse(Result);
+squeeze([H|T], H, H, Result) ->
+    squeeze(T, H, H, Result);
+squeeze([H|T], Char, _, Result) ->
+    squeeze(T, Char, H, [H|Result]).
 
 %-------------------------------------------------------------------------------
 strip_test_() ->
