@@ -21,6 +21,8 @@
          is_integer/1,
          format/2,
          strip/1,
+         split/2,
+         strip_split/2,
          squeeze/1,
          squeeze/2]).
 -include_lib("eunit/include/eunit.hrl").
@@ -196,3 +198,33 @@ whitespace($\f) -> true;
 whitespace($\r) -> true;
 whitespace($\ ) -> true;
 whitespace(_) -> false.
+
+%-------------------------------------------------------------------------------
+split_test_() ->
+    [?_assertEqual(["ab", "cd", "ef"], split("ab,cd,ef", ",")),
+     ?_assertEqual(["ab", "cd", "ef"], split("ab<#>cd<#>ef", "<#>")),
+     ?_assertEqual(["a,b,c"], split("a,b,c", "x")),
+     ?_assertEqual([[], "a", "b", [], [], "c", [] ], split(",a,b,,,c,", ","))].
+
+split(String, SeparatorString) ->
+    split(String, SeparatorString, [], []).
+
+split([], _, Current, Result) ->
+    lists:reverse([lists:reverse(Current)|Result]);
+split(String, Sep, Current, Result) ->
+    case begins_with(String, Sep) of
+        true ->
+            NewString = string:substr(String, length(Sep) + 1, length(String)),
+            split(NewString, Sep, [], [lists:reverse(Current)|Result]);
+        false ->
+            [H|T] = String,
+            split(T, Sep, [H|Current], Result)
+    end.
+
+%-------------------------------------------------------------------------------
+strip_split_test_() ->
+    [?_assertEqual(["ab", "cd", "ef"], strip_split(" ab<#>cd<#>ef \n", "<#>")),
+     ?_assertEqual(["a", "b", [], "c" ], strip_split("\ta,b,,c\r\f", ","))].
+
+strip_split(String, SeparatorString) ->
+    split(strip(String), SeparatorString).
