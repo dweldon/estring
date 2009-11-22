@@ -9,10 +9,14 @@ supported functions:
     contains(String, SubString)
         returns true if String contains SubString
     edit_distance(String1, String2)
-        returns the damerau-levenshtein edit distance between String1 and String2
+    edit_distance(String1, String2, CaseInsensitive)
+        returns the damerau-levenshtein edit distance between String1 and String2.
+        edit_distance/2 will call edit_distance/3 with CaseInsensitive == false.
     similarity(String, TargetString)
-        returns a case-insensitive score representing how similar String is to
-        TargetString based on the edit distance and the length of TargetString
+    similarity(String, TargetString, CaseInsensitive)
+        returns a score representing how similar String is to TargetString based
+        on the edit distance and the length of TargetString. similarity/2 will
+        call similarity/3 with CaseInsensitive == false.
     strip(String)
         returns a string, where leading and trailing whitespace (" ",\n\t\f\r)
         has been removed
@@ -43,11 +47,11 @@ examples:
         true
     estring:edit_distance("cars", "bats").
         2
-    estring:edit_distance("receive", "recieve").
+    estring:edit_distance("receive", "RECIEVE", true).
         1
     estring:similarity("epsn sporrts", "espn sports").
         0.8181818181818182
-    estring:similarity("edit distance", "Edit Distance").
+    estring:similarity("edit distance", "Edit Distance", true).
         1.0
     estring:is_integer("35").
         true

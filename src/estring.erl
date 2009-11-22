@@ -17,7 +17,9 @@
          ends_with/2,
          contains/2,
          edit_distance/2,
+         edit_distance/3,
          similarity/2,
+         similarity/3,
          is_integer/1,
          format/2,
          strip/1,
@@ -69,7 +71,17 @@ edit_distance_test_() ->
      %transposition + insertion + deletion
      ?_assertEqual(3, edit_distance("computer", "cmoputte")),
      %transposition + insertion + deletion, with source and target swapped
-     ?_assertEqual(3, edit_distance("cmoputte", "computer"))].
+     ?_assertEqual(3, edit_distance("cmoputte", "computer")),
+     ?_assertEqual(3, edit_distance("cars", "BaTS", false)),
+     ?_assertEqual(3, edit_distance("cars", "BaTS")),
+     ?_assertEqual(2, edit_distance("cars", "BaTS", true))].
+
+edit_distance(String1, String2, true) ->
+    S1 = string:to_lower(String1),
+    S2 = string:to_lower(String2),
+    edit_distance(S1, S2);
+edit_distance(String1, String2, false) ->
+    edit_distance(String1, String2).
 
 edit_distance(Source, Source) -> 0;
 edit_distance(Source, []) -> length(Source);
@@ -101,17 +113,25 @@ inner_loop([T1|[T0|T]], [S1, S0], {D2, D1, D0}) ->
 similarity_test_() ->
     [?_assertEqual(0.8, similarity("yaho", "yahoo")),
      ?_assertEqual(0.75, similarity("espn", "epsn")),
-     ?_assertEqual(0.5, similarity("cars", "BATS")),
+     ?_assertEqual(0.25, similarity("car", "BaTS", false)),
+     ?_assertEqual(0.25, similarity("car", "BaTS")),
+     ?_assertEqual(0.5, similarity("cars", "BATS", true)),
      ?_assertEqual(0.0, similarity("cars", "c")),
      ?_assertEqual(0.25, similarity("c", "cars")),
      ?_assertEqual(1.0, similarity("", ""))].
 
+similarity(String, TargetString, true) ->
+    S = string:to_lower(String),
+    TS = string:to_lower(TargetString),
+    similarity(S, TS);
+similarity(String, TargetString, false) ->
+    similarity(String, TargetString).
+
 similarity([], []) ->
     1.0;
 similarity(String, TargetString) ->
-    S = string:to_lower(String),
-    TS = string:to_lower(TargetString),    
-    Score = (length(TS) - edit_distance(S, TS)) / length(TS),
+    Score = (length(TargetString) - edit_distance(String, TargetString)) /
+            length(TargetString),
     case Score > 0 of
         true -> Score;
         false -> 0.0
