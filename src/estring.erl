@@ -33,7 +33,7 @@ begins_with_test_() ->
      ?_assertEqual(false, begins_with("foobar", "bar"))].
 
 begins_with(String, SubString) ->
-    string:str(String, SubString) =:= 1.
+    string:substr(String, 1, length(SubString)) =:= SubString.
 
 %-------------------------------------------------------------------------------
 ends_with_test_() ->
