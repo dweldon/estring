@@ -20,11 +20,9 @@ supported functions:
     strip(String)
         returns a string, where leading and trailing whitespace (" ",\n\t\f\r)
         has been removed
-    split(String, SeparatorString) ->
-        String is split into fields (sub-strings) by the SeparatorString
     strip_split(String, SeparatorString) ->
         helper function - less verbose way of calling:
-        estring:split(estring:strip(String), SeparatorString)
+        re:split(estring:strip(String), SeparatorString, [{return, list}])
     squeeze(String)
     squeeze(String, Char)
         returns a string where runs of the same character are replaced by Char.
@@ -65,7 +63,5 @@ examples:
         "the cow says mo"
     estring:squeeze("i need   a  squeeze!")
         "i need a squeeze!"
-    estring:split("please<#>split<#>me", "<#>").
-        ["please","split","me"]
     estring:strip_split("\tfirst,second,third\n", ",").
         ["first","second","third"]
