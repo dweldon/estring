@@ -12,11 +12,17 @@ supported functions:
     edit_distance(String1, String2, CaseInsensitive)
         returns the damerau-levenshtein edit distance between String1 and String2.
         edit_distance/2 will call edit_distance/3 with CaseInsensitive == false.
-    similarity(String, TargetString)
-    similarity(String, TargetString, CaseInsensitive)
-        returns a score representing how similar String is to TargetString based
-        on the edit distance and the length of TargetString. similarity/2 will
-        call similarity/3 with CaseInsensitive == false.
+    similarity(Source, Target)
+    similarity(Source, Target, CaseInsensitive)
+        returns a score representing how similar Source is to Target based
+        on the edit distance and the length of Target. similarity/2 will call
+        similarity/3 with CaseInsensitive == false.
+    similarity(Source, Target, CaseInsensitive, LowerLimit)
+        like the above with a short circuit performance enhancement. a simple
+        heuristic is used to estimate the upper bound for similarity between the
+        Source and Target strings. If the estimate exceeds LowerLimit, then
+        {error, limit_reached} is returned immediately. Otherwise {ok, Score} or
+        {error, limit_reached} is returned based on a call to similarity/3.
     strip(String)
         returns a string, where leading and trailing whitespace (" ",\n\t\f\r)
         has been removed

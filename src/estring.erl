@@ -20,6 +20,7 @@
          edit_distance/3,
          similarity/2,
          similarity/3,
+         similarity/4,
          is_integer/1,
          format/2,
          strip/1,
@@ -109,31 +110,106 @@ inner_loop([T1|[T0|T]], [S1, S0], {D2, D1, D0}) ->
     inner_loop([T0|T], [S1, S0], {tl(D2), tl(D1), [NewDist2|D0]}).
 
 %-------------------------------------------------------------------------------
-similarity_test_() ->
+edit_distance_estimate_test_() ->
+    [?_assertEqual(0.0, edit_distance_estimate("abc", "abc")),
+     ?_assertEqual(0.0, edit_distance_estimate("", "")),
+     ?_assertEqual(1.5, edit_distance_estimate("abc", "")),
+     ?_assertEqual(1.5, edit_distance_estimate("", "abc")),
+     ?_assertEqual(0.0, edit_distance_estimate("abc", "cba")),
+     ?_assertEqual(1.0, edit_distance_estimate("abc", "xbc")),
+     ?_assertEqual(0.5, edit_distance_estimate("abc", "abbc")),
+     ?_assertEqual(1.5, edit_distance_estimate("abcd", "abbcx")),
+     ?_assertEqual(2.0, edit_distance_estimate("abcd", "aabbccdd"))].
+
+% establishes a very conservate lower bound for edit distance - useful only for
+% early exit evaluations.
+edit_distance_estimate(L, L) -> 0.0;
+edit_distance_estimate(L1, L2) ->
+    % divide the estimate by 2 because replacements will be double counted.
+    % the downside of this is that inserts or deletes are undercounted.
+    edit_distance_estimate(lists:sort(L1), lists:sort(L2), 0.0) / 2.
+
+edit_distance_estimate([], L, D) ->
+    D + length(L);
+edit_distance_estimate(L, [], D) ->
+    D + length(L);
+edit_distance_estimate([H1|L1], [H2|L2], D) ->
+    if
+        H1 =:= H2 ->
+            edit_distance_estimate(L1, L2, D);
+        H1 < H2 ->
+            edit_distance_estimate(L1, [H2|L2], D+1);
+        H1 > H2 ->
+            edit_distance_estimate([H1|L1], L2, D+1)
+    end.
+
+%-------------------------------------------------------------------------------
+similarity_estimate_test_() ->
+    [?_assertEqual(1.0, similarity_estimate("", "")),
+     ?_assertEqual(0.0, similarity_estimate("abc", "def")),
+     ?_assertEqual(1.0, similarity_estimate("abc", "cba")),
+     ?_assertEqual(0.8, similarity_estimate("abcde", "xbcde"))].
+
+% establishes a very conservate upper bound for string similarity
+similarity_estimate(S, S) -> 1.0;
+similarity_estimate(S, T) ->
+    DistanceEstimate = edit_distance_estimate(S, T),
+    SimilarityEstimate = (length(T) - DistanceEstimate ) / length(T),
+    case SimilarityEstimate > 0 of
+        true -> SimilarityEstimate;
+        false -> 0.0
+    end.
+
+%-------------------------------------------------------------------------------
+similarity2_test_() ->
     [?_assertEqual(0.8, similarity("yaho", "yahoo")),
      ?_assertEqual(0.75, similarity("espn", "epsn")),
-     ?_assertEqual(0.25, similarity("car", "BaTS", false)),
      ?_assertEqual(0.25, similarity("car", "BaTS")),
-     ?_assertEqual(0.5, similarity("cars", "BATS", true)),
      ?_assertEqual(0.0, similarity("cars", "c")),
      ?_assertEqual(0.25, similarity("c", "cars")),
      ?_assertEqual(1.0, similarity("", ""))].
 
-similarity(String, TargetString, true) ->
-    S = string:to_lower(String),
-    TS = string:to_lower(TargetString),
-    similarity(S, TS);
-similarity(String, TargetString, false) ->
-    similarity(String, TargetString).
+similarity3_test_() ->
+    [?_assertEqual(0.25, similarity("car", "BaTS", false)),
+     ?_assertEqual(0.5, similarity("cars", "BATS", true))].
 
-similarity([], []) ->
-    1.0;
-similarity(String, TargetString) ->
-    Score = (length(TargetString) - edit_distance(String, TargetString)) /
-            length(TargetString),
+similarity4_test_() ->
+    [?_assertEqual({ok, 1.0}, similarity("yahoo", "yahoo", true, 0.8)),
+     ?_assertEqual({ok, 0.8}, similarity("yahoo", "bahoo", true, 0.8)),
+     ?_assertEqual({ok, 0.8}, similarity("yahoo", "Yahoo", false, 0.7)),
+     ?_assertEqual({error, limit_reached},
+                   similarity("yahoo", "Yahoo", false, 0.9)),
+     ?_assertEqual({error, limit_reached},
+                   similarity("yahoo", "bahoo", true, 0.9))].
+
+similarity(Source, Source) -> 1.0;
+similarity(Source, Target) ->
+    Score = (length(Target) - edit_distance(Source, Target)) / length(Target),
     case Score > 0 of
         true -> Score;
         false -> 0.0
+    end.
+
+similarity(Source, Target, true) ->
+    S = string:to_lower(Source),
+    T = string:to_lower(Target),
+    similarity(S, T);
+similarity(Source, Target, false) ->
+    similarity(Source, Target).
+
+similarity(Source, Target, CaseInsensitive, LowerLimit) ->
+    {S, T} = case CaseInsensitive of
+                 true -> {string:to_lower(Source), string:to_lower(Target)};
+                 false -> {Source, Target}
+             end,
+    case similarity_estimate(S, T) >= LowerLimit of
+        true ->
+            Score = similarity(S, T),
+            case Score >= LowerLimit of
+                true -> {ok, Score};
+                false ->  {error, limit_reached}
+            end;
+        false -> {error, limit_reached}
     end.
 
 %-------------------------------------------------------------------------------
