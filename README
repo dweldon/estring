@@ -40,6 +40,8 @@ supported functions:
     format(Format, Data) ->
         helper function - less verbose way of calling:
         lists:flatten(io_lib:format(Format, Data))
+    random(N) ->
+        returns a random alphanumeric string of length N
 
 examples:
 
@@ -65,9 +67,11 @@ examples:
         "99 bottles of beer on the wall"
     estring:strip(" clean me \n").
         "clean me"
-    estring:squeeze("the cow says moooo", "o")
+    estring:squeeze("the cow says moooo", "o").
         "the cow says mo"
-    estring:squeeze("i need   a  squeeze!")
+    estring:squeeze("i need   a  squeeze!").
         "i need a squeeze!"
     estring:strip_split("\tfirst,second,third\n", ",").
         ["first","second","third"]
+    estring:random(20).
+        "c3ZYupXbbcd9ILxO23WJ"

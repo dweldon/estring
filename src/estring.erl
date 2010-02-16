@@ -23,10 +23,12 @@
          similarity/4,
          is_integer/1,
          format/2,
+         random/1,
          strip/1,
          strip_split/2,
          squeeze/1,
          squeeze/2]).
+-define(CHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789").
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -301,3 +303,15 @@ strip_split_test_() ->
 
 strip_split(String, SeparatorString) ->
     re:split(strip(String), SeparatorString, [{return, list}]).
+
+%-------------------------------------------------------------------------------
+random_test() ->
+    ?assertEqual(100, length(random(100))).
+
+random(N) when N > 0->
+    [random_character() || _ <- lists:seq(1, N)].
+
+random_character() ->
+    lists:nth(random:uniform(61), ?CHARS).
+
+%-------------------------------------------------------------------------------
