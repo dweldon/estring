@@ -28,7 +28,7 @@
          strip_split/2,
          squeeze/1,
          squeeze/2]).
--define(CHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789").
+-define(CHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").
 -include_lib("eunit/include/eunit.hrl").
 
 %-------------------------------------------------------------------------------
@@ -312,6 +312,6 @@ random(N) when N > 0->
     [random_character() || _ <- lists:seq(1, N)].
 
 random_character() ->
-    lists:nth(random:uniform(61), ?CHARS).
+    lists:nth(random:uniform(62), ?CHARS).
 
 %-------------------------------------------------------------------------------
