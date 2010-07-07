@@ -206,6 +206,7 @@ format(Format, Data) ->
 
 % @spec random(N::integer()) -> string()
 random(N) when N > 0->
+    random:seed(now()),
     [random_character() || _ <- lists:seq(1, N)].
 
 random_character() ->
