@@ -27,7 +27,8 @@
          squeeze/2,
          is_integer/1,
          format/2,
-         random/1]).
+         random/1,
+         rot13/1]).
 -define(CHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").
 -include_lib("eunit/include/eunit.hrl").
 
@@ -212,6 +213,16 @@ random(N) when N > 0->
 random_character() ->
     lists:nth(random:uniform(62), ?CHARS).
 
+% @spec rot13(String::string()) -> string()
+rot13(String) ->
+    [r13(C) || C <- String].
+
+r13(C) when (C >= $A andalso C =< $M) -> C + 13;
+r13(C) when (C >= $a andalso C =< $m) -> C + 13;
+r13(C) when (C >= $N andalso C =< $Z) -> C - 13;
+r13(C) when (C >= $n andalso C =< $z) -> C - 13;
+r13(C) -> C.
+
 begins_with_test_() ->
     [?_assertEqual(true, begins_with("foobar", "foo")),
      ?_assertEqual(false, begins_with("foobar", "bar"))].
@@ -322,3 +333,9 @@ format_test_() ->
 
 random_test() ->
     ?assertEqual(100, length(random(100))).
+
+rot13_test_() ->
+    S1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234",
+    S2 = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm1234",
+    [?_assertEqual(S2, rot13(S1)),
+     ?_assertEqual(S1, rot13(S2))].

@@ -24,6 +24,7 @@ Functions
 * is_integer/1
 * format/2
 * random/1
+* rot13/1
 
 Function Descriptions
 ---------------------
@@ -109,3 +110,8 @@ helper function - less verbose way of calling:
 returns a random alphanumeric string of length N.
     > estring:random(32).
     "LzahJub1KOMS0U66mdXHtHyMMXIdxv1t"
+
+### rot13(String) -> string()
+applies the rot13 substitution cipher to String.
+    > estring:rot13("The Quick Brown Fox Jumps Over The Lazy Dog.").
+    "Gur Dhvpx Oebja Sbk Whzcf Bire Gur Ynml Qbt."
