@@ -1,6 +1,6 @@
 Overview
 --------
-estring is erlang string manipulation library
+estring is an erlang string manipulation library
 
 Installation
 ------------

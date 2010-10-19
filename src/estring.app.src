@@ -1,0 +1,7 @@
+{application, estring,
+ [{description, "erlang string manipulation library"},
+  {vsn, "0.1"},
+  {registered, []},
+  {applications, [kernel, stdlib]},
+  {mod, {estring_app, []}},
+  {env, []}]}.

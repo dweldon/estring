@@ -31,7 +31,9 @@
          random/1,
          rot13/1]).
 -define(CHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %% @spec begins_with(String::string(), SubString::string()) -> bool()
 begins_with(String, SubString) ->
@@ -45,7 +47,8 @@ ends_with(String, SubString) ->
 contains(String, SubString) ->
     string:str(String, SubString) > 0.
 
-%% @spec edit_distance(String1::string(), String2::string()) -> integer()
+%% @spec edit_distance(String1::string(), String2::string(),
+%%                     CaseInsensitive::bool()) -> integer()
 edit_distance(String1, String2, true) ->
     S1 = string:to_lower(String1),
     S2 = string:to_lower(String2),
@@ -53,8 +56,7 @@ edit_distance(String1, String2, true) ->
 edit_distance(String1, String2, false) ->
     edit_distance(String1, String2).
 
-%% @spec edit_distance(String1::string(), String2::string(),
-%%                     CaseInsensitive::bool()) -> integer()
+%% @spec edit_distance(String1::string(), String2::string()) -> integer()
 edit_distance(Source, Source) -> 0;
 edit_distance(Source, []) -> length(Source);
 edit_distance([], Source) -> length(Source);
@@ -174,7 +176,7 @@ whitespace($\r) -> true;
 whitespace($\ ) -> true;
 whitespace(_) -> false.
 
-%% @spec strip_split(String:string(), SeparatorString:string()) -> list()
+%% @spec strip_split(String::string(), SeparatorString::string()) -> list()
 strip_split(String, SeparatorString) ->
     re:split(strip(String), SeparatorString, [{return, list}]).
 
@@ -183,7 +185,7 @@ squeeze(String) -> squeeze(String, " ").
 
 %% @spec squeeze(String::string(), Char::character()) -> string()
 %% where
-%%       character() = integer() | string() with length =:= 1
+%%       character() = integer() | string()
 squeeze(String, Char) when erlang:is_integer(Char) ->
     squeeze(String, Char, [], []);
 squeeze(String, Char) when is_list(Char) ->
@@ -223,6 +225,8 @@ r13(C) when (C >= $a andalso C =< $m) -> C + 13;
 r13(C) when (C >= $N andalso C =< $Z) -> C - 13;
 r13(C) when (C >= $n andalso C =< $z) -> C - 13;
 r13(C) -> C.
+
+-ifdef(TEST).
 
 begins_with_test_() ->
     [?_assertEqual(true, begins_with("foobar", "foo")),
@@ -340,3 +344,5 @@ rot13_test_() ->
     S2 = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm1234",
     [?_assertEqual(S2, rot13(S1)),
      ?_assertEqual(S1, rot13(S2))].
+
+-endif.
