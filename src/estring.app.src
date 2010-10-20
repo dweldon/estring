@@ -1,5 +1,5 @@
 {application, estring,
- [{description, "erlang string manipulation library"},
+ [{description, "string manipulation library"},
   {vsn, "0.1"},
   {registered, []},
   {applications, [kernel, stdlib]},

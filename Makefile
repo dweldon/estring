@@ -15,3 +15,4 @@ clean:
 	$(REBAR) clean
 
 release: all test
+	typer -r ./src/ > /dev/null
