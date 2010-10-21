@@ -7,10 +7,10 @@ Installation
     git clone git://github.com/dweldon/estring.git
     cd estring && make
 
-Functions
+Interface
 ---------
-The following examples demonstrate some of the functions in estring. Please see
-the complete documentation by running `make doc`.
+The following examples give an overview of the estring interface. Please see the
+complete documentation by running `make doc`.
 
 ### Matching
     > estring:begins_with("fancy pants", "fancy").

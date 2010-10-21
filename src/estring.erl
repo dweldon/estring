@@ -37,7 +37,7 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
-%% @spec begins_with(string(), string()) -> boolean()
+%% @spec begins_with(string(), string()) -> bool()
 %% @doc Returns `true' if `String' begins with `SubString',
 %% and `false' otherwise.
 %% ```
@@ -48,7 +48,7 @@
 begins_with(String, SubString) ->
     string:substr(String, 1, length(SubString)) =:= SubString.
 
-%% @spec contains(string(), string()) -> boolean()
+%% @spec contains(string(), string()) -> bool()
 %% @doc Returns `true' if `String' contains `SubString', and `false' otherwise.
 %% ```
 %% > estring:contains("los angeles", "angel").
@@ -92,7 +92,7 @@ inner_loop([T1|[T0|T]], [S1, S0], {D2, D1, D0}) ->
         end,
     inner_loop([T0|T], [S1, S0], {tl(D2), tl(D1), [NewDist2|D0]}).
 
-%% @spec edit_distance(string(), string(), IgnoreCase::boolean()) -> integer()
+%% @spec edit_distance(string(), string(), IgnoreCase::bool()) -> integer()
 %% @doc Returns the damerau-levenshtein edit distance between `String1' and
 %% `String2'. The comparison is case insensitive if `IgnoreCase' is `true'.
 %% ```
@@ -133,7 +133,7 @@ edit_distance_estimate([H1|L1], [H2|L2], D) ->
             edit_distance_estimate([H1|L1], L2, D+1)
     end.
 
-%% @spec ends_with(string(), string()) -> boolean()
+%% @spec ends_with(string(), string()) -> bool()
 %% @doc Returns `true' if `String' ends with `SubString', and `false' otherwise.
 %% ```
 %% > estring:ends_with("fancy pants", "pants").
@@ -153,7 +153,7 @@ ends_with(String, SubString) ->
 format(Format, Data) ->
     lists:flatten(io_lib:format(Format, Data)).
 
-%% @spec is_integer(string()) -> boolean()
+%% @spec is_integer(string()) -> bool()
 %% @doc Returns `true' if `String' is a string representation of an integer,
 %% and `false' otherwise.
 %% ```
@@ -218,7 +218,7 @@ similarity(Source, Target) ->
         false -> 0.0
     end.
 
-%% @spec similarity(string(), string(), IgnoreCase::boolean()) -> float()
+%% @spec similarity(string(), string(), IgnoreCase::bool()) -> float()
 %% @doc Returns a score between 0 and 1, representing how similar `Source' is to
 %% `Target' based on the edit distance and normalized by the length of `Target'.
 %% Note the order of `Source' and `Target' matters. The comparison is case
@@ -235,7 +235,7 @@ similarity(Source, Target, true) ->
 similarity(Source, Target, false) ->
     similarity(Source, Target).
 
-%% @spec similarity(string(), string(), IgnoreCase::boolean(), float()) ->
+%% @spec similarity(string(), string(), IgnoreCase::bool(), float()) ->
 %%       {ok, float()} | {error, limit_reached}
 %% @doc Returns a score between 0 and 1, representing how similar `Source' is to
 %% `Target' based on the edit distance and normalized by the length of `Target'.
